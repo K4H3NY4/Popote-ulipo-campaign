@@ -1,0 +1,126 @@
+# Project Plan: Popote Mosaic Bot & Management Dashboard
+
+## 1. Project Overview & Core Concept
+An automated WhatsApp-based image service where users submit photos and receive a custom composite image featuring a generated mosaic background with their photo placed prominently in the foreground. The system includes an administrative dashboard for monitoring usage, analytics, and content moderation.
+
+---
+
+## 2. System Architecture & Tech Stack
+
+### Backend & Processing Engine
+- **Framework:** Python (Flask)
+- **Task Queue & Async Workers:** Celery + Redis (or RQ / background threads) for non-blocking image processing and webhook responses.
+- **Database:** PostgreSQL / SQLite (for user sessions, processing logs, analytics, admin accounts).
+- **Storage:** Local / AWS S3 / Cloudinary (temporary user uploads & final generated mosaics).
+
+### AI & Third-Party APIs
+- **Twilio API for WhatsApp:** Inbound webhook listener and outbound media messaging.
+- **Google Gemini API:** 
+  - Automated content moderation (safety filters / adult content detection).
+  - Dynamic captioning or prompt-assisted mosaic style guidance.
+- **Image Processing Engine:** OpenCV / Pillow (PIL) / specialized mosaic generator script for tiling, color matching, blending, and foreground segmentation/overlay.
+
+### Admin Dashboard
+- **Framework:** Next.js (React + Tailwind CSS / Shadcn UI)
+- **Authentication:** NextAuth.js / JWT-based admin authentication
+- **Features:** Analytics charts, message logs, user rate limits, manual moderation flag review, system health.
+
+---
+
+## 3. End-to-End Workflow
+
+```
+[User on WhatsApp] 
+        │ (1. Sends Image)
+        ▼
+[Twilio WhatsApp Webhook]
+        │ (2. Forward event)
+        ▼
+[Flask Backend API] ──► (Acknowledge Twilio immediately with "Processing..." message)
+        │
+        ▼ (3. Enqueue Async Job)
+[Worker Queue (Celery/Redis)]
+        │
+        ├──► [A. Content Moderation (Gemini Safety API)]
+        │      └── If Flagged: Send warning message back via Twilio & Log incident.
+        │
+        ├──► [B. Image Processing Pipeline]
+        │      ├── 1. Preprocess & extract dominant color palette / subject
+        │      ├── 2. Generate photo mosaic background from asset tile library
+        │      └── 3. Composite original user image onto foreground with blending
+        │
+        └──► [C. Delivery via Twilio API]
+               └── Send final image URL / media payload back to user's WhatsApp.
+        │
+        ▼
+[Database / Storage] ──► Updated with stats, metrics, and processing logs.
+        ▲
+        │ (Query stats)
+[Next.js Admin Dashboard]
+```
+
+---
+
+## 4. Key Modules & Functional Requirements
+
+### A. WhatsApp Inbound/Outbound Engine (Flask + Twilio)
+- Webhook endpoint (`/api/whatsapp/webhook`) to parse incoming media messages.
+- Immediate response handling (200 OK + queuing) to prevent Twilio webhook timeout (>15s).
+- Session tracking (welcoming new users, rate-limiting spam requests).
+- Outbound media dispatcher to push completed images back to the user.
+
+### B. Image Processing & Mosaic Pipeline
+- **Mosaic Generation:** Tile-based color matching algorithm using a curated library of base images/tiles.
+- **Foreground Extraction & Blending:** Background removal/masking or dual-layer overlay to keep the user's portrait sharp against the textured mosaic.
+- **Optimization:** Resize/compress outputs for smooth WhatsApp media delivery (<5MB).
+
+### C. Gemini Integration
+- **Safety & Moderation:** Pre-check image for NSFW, violence, or prohibited content before processing.
+- **Smart Responses:** Optional AI-generated creative captions or personalized greetings accompanying the delivery.
+
+### D. Management Dashboard (Next.js)
+- **Metrics Overview:** Total images generated, daily active users, peak traffic hours, average processing latency.
+- **Content Moderation Log:** View flagged images, reason for rejection, and ban/unban numbers.
+- **System Health & Config:** Queue depth, API credit monitoring (Twilio / Gemini), mosaic tile bank management.
+
+---
+
+## 5. Edge Cases & Resilience Strategies
+
+| Edge Case | Risk / Impact | Mitigation Strategy |
+| :--- | :--- | :--- |
+| **High Traffic & Multiple Users** | Server bottleneck, dropped requests | Decouple webhook ingestion from image generation using Celery/Redis queue. |
+| **Response Latency** | Twilio webhook timeout (15s) | Send quick initial confirmation ("Creating your mosaic..."), process asynchronously, deliver via proactive message. |
+| **Adult / Inappropriate Content** | Safety violation, Twilio TOS breach | Mandatory Gemini Vision safety filtering step before processing; reject & notify immediately. |
+| **Unsupported / Low Quality Media** | Script crashes on invalid format/resolution | Validate MIME types, minimum resolution check, format normalization (convert to standard RGB JPEG/PNG). |
+| **Spam / Rate Limiting** | Rapid-fire uploads consuming API limits | Token bucket / cooldown rate limiter per phone number (e.g., max 3 requests per 10 minutes). |
+
+---
+
+## 6. User Roles & Access Control
+
+- **End User (WhatsApp):**
+  - Identified by phone number (no account signup required).
+  - Permissions: Submit images, receive generated mosaics, check status/help.
+- **Administrator (Web Dashboard):**
+  - Secure email/password authentication (JWT / Session-based).
+  - Permissions: View analytics, inspect logs, manage system parameters, review moderation queues.
+
+---
+
+## 7. Project Roadmap & Milestones
+
+1. **Phase 1: Core Processing & Prototype**
+   - Build standalone Python mosaic generation & foreground compositing script.
+   - Integrate Gemini API for content moderation.
+2. **Phase 2: WhatsApp Webhook & Async Pipeline**
+   - Set up Flask API and Twilio WhatsApp sandbox.
+   - Configure background task queue (Celery/Redis) for asynchronous processing and image dispatch.
+3. **Phase 3: Database & Analytics Layer**
+   - Design database schema for user interactions, logs, and performance metrics.
+4. **Phase 4: Admin Management Dashboard**
+   - Build Next.js dashboard connected to Flask REST API.
+   - Implement authentication, visual charts, and moderation log views.
+5. **Phase 5: Testing & Deployment**
+   - End-to-end stress testing for concurrent image processing.
+   - Deploy backend (Render/AWS/Docker) and frontend (Vercel).

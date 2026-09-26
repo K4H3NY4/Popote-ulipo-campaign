@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#063d29">
+  <meta name="description" content="Put yourself in the picture. Create your own Popote Ulipo celebration poster.">
+  <title>Popote Ulipo — Your story. Our celebration.</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#create">Skip to photo upload</a>
+<header class="site-header">
+  <a href="#home" class="brand" aria-label="Popote Ulipo home"><span class="brand-number">25</span><span>POPOTE<br>ULIPO</span></a>
+  <nav aria-label="Main navigation"><a href="#how-it-works">How it works</a><a href="#create" class="nav-cta">Create your poster <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main>
+  <section class="hero" id="home" aria-labelledby="hero-title">
+    <div class="hero-photo"><img src="assets/portrait.jpg" alt="Portrait of a woman in a colourful patterned outfit" fetchpriority="high" width="1800" height="2700"></div>
+    <div class="hero-shade"></div>
+    <div class="hero-content">
+      <p class="eyebrow"><span></span> 25 YEARS. MILLIONS OF STORIES.</p>
+      <h1 id="hero-title">Your story.<br>Our <em>celebration.</em></h1>
+      <p class="hero-description">Wherever life takes you, you're part of the picture. Turn your selfie into a Popote Ulipo celebration poster.</p>
+      <a href="#create" class="button">Put yourself in the picture <span aria-hidden="true">↗</span></a>
+      <p class="hero-note">One photo. Your own piece of the celebration.</p>
+    </div>
+    <div class="photo-caption"><span class="caption-line"></span> EVERY FACE HAS A STORY.</div>
+    <div class="hero-bottom"><span>SAFARICOM · POPOTE ULIPO</span><a href="#how-it-works">Discover the experience ↓</a></div>
+  </section>
+  <section class="intro section-wrap" id="how-it-works">
+    <div class="section-heading"><p class="eyebrow dark">A CELEBRATION WITH YOU IN IT</p><h2>A little selfie.<br>A bigger story.</h2></div>
+    <div class="steps">
+      <article><span class="step-number">01 /</span><h3>Make it you.</h3><p>Choose a clear, well-lit photo of yourself. A simple background works beautifully.</p></article>
+      <article><span class="step-number">02 /</span><h3>Let it come together.</h3><p>Your photo is checked for suitable content, then transformed into a celebration poster.</p></article>
+      <article><span class="step-number">03 /</span><h3>Keep your moment.</h3><p>Download your finished poster and share your part of the story.</p></article>
+    </div>
+  </section>
+  <section class="studio section-wrap" id="create" aria-labelledby="studio-title">
+    <div class="studio-story"><p class="eyebrow dark">YOUR MOMENT STARTS HERE</p><h2 id="studio-title">You belong<br>in the picture.</h2><p>Bring your photo. We'll bring the celebration.</p><img class="campaign-art" src="assets/campaign.jpg" alt="Safaricom 25 Popote Ulipo. Celebrating 25 years of transforming lives." width="780" height="470" loading="lazy"></div>
+    <div class="upload-card">
+      <div class="card-heading"><span class="mini-label">POPOTE MOSAIC</span><span class="pill">Made with AI</span></div>
+      <h3>Create your poster</h3><p class="muted">Start with a photo that feels like you.</p>
+      <form id="uploadForm" data-endpoint="/generate">
+        <label class="dropzone" id="dropzone" for="imageInput">
+          <input type="file" id="imageInput" name="image" accept="image/jpeg,image/png" aria-describedby="uploadHint">
+          <svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="7" y="10" width="34" height="30" rx="6"/><path d="M15 10l3-5h12l3 5"/><circle cx="24" cy="25" r="8"/><path d="M24 21v8m-4-4h8"/></svg>
+          <strong>Drop your photo here</strong><span>or <u>browse your files</u></span><small id="uploadHint">JPG or PNG · Up to 16 MB</small>
+        </label>
+        <div id="fileInfo" class="file-info" hidden><img id="selectedPreview" alt="Selected photo preview"><div><strong id="fileName"></strong><small id="fileSize"></small></div><button id="removeBtn" type="button" aria-label="Remove selected photo">×</button></div>
+        <label class="consent"><input type="checkbox" id="consent" required><span>I have permission to use this photo and agree to send it for AI processing to create my poster.</span></label>
+        <button class="button generate-button" type="submit" id="submitBtn" disabled><span id="buttonText">Generate my poster</span><span aria-hidden="true">↗</span></button>
+        <p class="upload-note">Your photo is uploaded only when you select Generate.</p>
+      </form>
+      <div id="loading" class="loading" role="status" aria-live="polite" hidden><span class="spinner" aria-hidden="true"></span><div><strong>Creating your moment…</strong><p>Checking your photo and bringing your poster together. This may take a little while.</p></div></div>
+      <div id="errorAlert" class="error" role="alert" hidden><strong>We couldn't create your poster.</strong><p id="errorMessage"></p></div>
+      <noscript><p>Please enable JavaScript to upload your photo and generate a poster.</p></noscript>
+    </div>
+  </section>
+  <section id="results" class="results section-wrap" aria-labelledby="resultTitle" tabindex="-1" hidden>
+    <div class="result-heading"><div><p class="eyebrow dark">YOUR PIECE OF THE CELEBRATION</p><h2 id="resultTitle">Look who's in the picture.</h2></div><a class="button" id="downloadBtn" download="popote-ulipo-poster.png">Download poster ↓</a></div>
+    <div class="result-grid"><figure><figcaption>Your original</figcaption><img id="originalImg" alt="Your uploaded photo"></figure><figure class="generated"><figcaption>Your Popote Ulipo poster</figcaption><img id="generatedImg" alt="Your generated celebration poster"></figure></div>
+    <p class="muted">AI-generated images may vary. Review your poster before sharing.</p>
+    <button class="text-button" id="startAgain" type="button">Create another poster ↗</button>
+  </section>
+  <section class="closing"><p>Different journeys. One celebration.</p><h2>Popote ulipo.<br><span>We're together.</span></h2><a href="#create">Make your moment ↗</a></section>
+</main>
+<footer><a href="#home" class="footer-brand">POPOTE ULIPO</a><p>Celebrating 25 years of transforming lives.</p><span>Campaign concept</span></footer>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "version": "7.3",
+  "routing_model": {
+    "FIRST": []
+  },
+  "screens": [
+    {
+      "id": "FIRST",
+      "title": "Safaricom Popote Ulipo",
+      "terminal": true,
+      "data": {},
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "flow_path",
+            "children": [
+              {
+                "type": "PhotoPicker",
+                "name": "photo_picker",
+                "label": "Upload a selfie",
+                "description": "Please upload a clear selfie for Safaricom Popote Ulipo verification.",
+                "photo-source": "camera_gallery",
+                "min-uploaded-photos": 1,
+                "max-uploaded-photos": 1,
+                "max-file-size-kb": 10240
+              },
+              {
+                "type": "Footer",
+                "label": "Submit"
+             
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
